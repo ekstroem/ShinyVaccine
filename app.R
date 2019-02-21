@@ -1,10 +1,15 @@
+# This is a Shiny web application to show a simple SIR model with vaccination. 
+# 
+# Created by Claus Ekstrøm 2019
 #
-# This is a Shiny web application. You can run the application by clicking
+# You can run the application by clicking
 # the 'Run App' button above.
 #
-# Find out more about building applications with Shiny here:
+
+
+
 #
-#    http://shiny.rstudio.com/
+# First load the necessary packages
 #
 
 library("shiny")
@@ -13,10 +18,11 @@ library("cowplot")
 library("ggplot2")
 library("tidyverse")
 library("ggrepel")
-#library("highcharter")
 library("shinydashboard")
 
-## Create an SIR function
+#
+# Create an SIR function for ude with the ordinary differential equations later on
+#
 sir <- function(time, state, parameters) {
   with(as.list(c(state, parameters)), {
     dS <- -beta * S * I
@@ -27,7 +33,10 @@ sir <- function(time, state, parameters) {
   })
 }
 
-# Define UI for application that draws a histogram
+#
+# Define the UI
+#
+
 ui <- dashboardPage(
   dashboardHeader(disable = TRUE),
   dashboardSidebar(
@@ -72,8 +81,7 @@ ui <- dashboardPage(
       min = 1,
       max = 400,
       value = 200
-    )
-    
+    )    
   ),
   dashboardBody(
     tags$head(tags$style(HTML('
@@ -85,11 +93,9 @@ ui <- dashboardPage(
                               /* body */
                               .content-wrapper, .right-side {
                               background-color: #fffff8;
-                              }
-                              
+                              }                              
                               '))),
         
-    #    mainPanel(
     fluidRow(plotOutput("distPlot")),
     br(),
     fluidRow(
@@ -103,13 +109,12 @@ ui <- dashboardPage(
     br(),
     br()
   )
-  #  )
 )
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
   # Create reactive input
-  popsize <- 5700000
+  popsize <- 5700000   # Set a rough population size for Denmark
   dataInput <- reactive({
     init       <-
       c(
@@ -134,8 +139,6 @@ server <- function(input, output) {
         func = sir,
         parms = parameters
       )
-    
-    #    out
     as.data.frame(out)
   })
   
@@ -217,7 +220,7 @@ server <- function(input, output) {
       dataInput() %>% filter(time == max(time)) %>% select(R) %>% mutate(R = round(100 *
                                                                                      R, 2)) %>% paste0("%"),
       "Andel af hele populationen ramt af sygdommen",
-      icon = icon("thumbs-up", lib = "glyphicon"),
+      icon = icon("thermometer-full"),
       color = "black"
     )
   })
@@ -235,13 +238,10 @@ server <- function(input, output) {
     )
   })
   
-  
-  # Mangler af gange med N
   output$BRRBox <- renderValueBox({
     valueBox(
       paste0(round(input$connum *
-                     ((1 - input$pvac / 100 * input$vaceff / 100)
-                     )
+                     (1 - input$pvac / 100 * input$vaceff / 100)                     
                    , 2), ""),
       "Effektiv R0 (for populationen ved udbrudsstart, når immune er taget i betragtning)",
       icon = icon("arrows-alt"),
