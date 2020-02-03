@@ -43,6 +43,8 @@ seiqr <- function(time, state, parameters) {
 ui <- dashboardPage(
   dashboardHeader(disable = TRUE),
   dashboardSidebar(
+  sidebarMenu(
+      menuItem("Population", tabName = "menu_1",
     sliderInput(
       "connum",
       "Basic reproductive number (R0, antal personer):",
@@ -63,7 +65,9 @@ ui <- dashboardPage(
       min = 0,
       max = 100,
       value = 0
-    ),
+    )
+),
+      menuItem("Sygdomskarakteristika", tabName = "menu_3",
     sliderInput(
       "infper",
       "Inkubationsperiode (dage):",
@@ -77,21 +81,24 @@ ui <- dashboardPage(
       min = 1,
       max = 30,
       value = 7
-    ),
-    sliderInput(
-      "q1",
-      "Karantænetid for inficerede (dage):",
-      min = 0,
-      max = 28,
-      value = 0
-    ),
-    sliderInput(
-      "q2",
-      "Karantænetid for bærere (dage):",
-      min = 0,
-      max = 28,
-      value = 0
-    ),
+    )
+),
+      menuItem("Karantæne", tabName = "menu_2",
+        sliderInput(
+          "q1",
+          "Karantænetid for inficerede (dage):",
+          min = 0,
+          max = 28,
+          value = 0
+        ),
+        sliderInput(
+          "q2",
+          "Karantænetid for bærere (dage):",
+          min = 0,
+          max = 28,
+          value = 0
+        )
+      ),
     sliderInput(
       "timeframe",
       "Tidsperiode (dage):",
@@ -99,7 +106,7 @@ ui <- dashboardPage(
       max = 1200,
       value = 400
     )
-
+)
   ),
   dashboardBody(
     tags$head(tags$style(HTML('
@@ -112,7 +119,7 @@ ui <- dashboardPage(
                               .content-wrapper, .right-side {
                               background-color: #fffff8;
                               }                              
-                              ')), ".fa-thermometer-full {color:#E87722}"
+                              '))
 ),
         
     fluidRow(plotOutput("distPlot")),
@@ -179,24 +186,27 @@ server <- function(input, output) {
         key2 = recode(
           key,
           S = "Modtagelige (S)",
-          E = "E",
+          E = "Bærere (E)",
           I = "Inficerede (I)",
-          Q = "Q",
+          Q = "Karantæne (Q)",
           R = "Sygdomsramte (R)",
-          V = "Naturlig immune"
+          V = "Naturlig immune (V)"
         ),
         keyleft = recode(
           key,
           S = "Modtagelige (S)",
+          E = "Bærere (E)",
           I = "",
           R = "",
-          V = "Naturlig immune"
+          Q = "",
+          V = "Naturlig immune (V)"
         ),
         keyright = recode(
           key,
           S = "",
           I = "Inficerede (I)",
           R = "Sygdomsramte (R)",
+          Q = "Karantæne (Q)",
           V = ""
         )
       )
@@ -233,7 +243,7 @@ server <- function(input, output) {
         direction = "y"
       ) +
       theme(legend.position = "none") +
-      scale_colour_manual(values = c("yellow", "red", "green4", "blue", "orange", "black")) +
+      scale_colour_manual(values = c("khaki3", "red", "orange", "green4", "blue", "black")) +
       scale_y_continuous(labels = scales::percent, limits = c(0, 1)) +
       theme(
         rect=element_rect(size=0),
