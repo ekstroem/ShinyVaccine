@@ -190,7 +190,7 @@ server <- function(input, output) {
           I = "Inficerede (I)",
           Q = "Karantæne (Q)",
           R = "Sygdomsramte (R)",
-          V = "Naturlig immune (V)"
+          V = "Naturligt immune (V)"
         ),
         keyleft = recode(
           key,
@@ -199,7 +199,7 @@ server <- function(input, output) {
           I = "",
           R = "",
           Q = "",
-          V = "Naturlig immune (V)"
+          V = "Naturligt immune (V)"
         ),
         keyright = recode(
           key,
